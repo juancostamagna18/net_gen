@@ -8,9 +8,18 @@ from functools import reduce
 from operator import and_
 from utilities import *
 
-def random_gen(stars):
+def random_gen(stars,edge_lenght, max_lenght=False):
+  '''
+    creates a net with a random choice for the arcs.
+    Arguments:
+        stars: a list of dictionaries with the stars data
+        edge_lenght: maximum allowable lenght for every edge in the net
+        max_lenght: tell us if are usign maximum allowable lenght in the algorithm
+    Returns:
+        The net in a list of edges, the elapsed time, the memory used by the algorithm.
+    '''
   all_connected = False
-  
+
   G1 = Graph(directed=False)
   G1.add_vertex(amount_stars)
   edge_weight = G1.new_edge_property("double")
@@ -28,7 +37,8 @@ def random_gen(stars):
         j = np.random.randint(0,amount_stars)
       arc = (i,j)
       if arc not in selected_arcs:
-        selected_arcs.append(arc)
+        if not max_lenght or dist1(i,j,stars) > edge_lenght:
+            selected_arcs.append(arc)
         e = G1.add_edge(arc[0],arc[1])
         d = dist1(arc[0],arc[1],stars)
         edge_weight[e] = d
@@ -56,7 +66,7 @@ for amount_stars in range(10,101,10):
   selected_arcs = []
   stars = import_database_ran('./base_final.csv', amount_stars)
   tras_index, stars_fil = add_tras(stars,amount_stars)
-  selected_arcs, elapsed_time, mem = random_gen(stars_fil)
+  selected_arcs, elapsed_time, mem = random_gen(stars_fil,12.1,True)
   #dist = shortest_distance(G1,0,tras_index,weights=edge_weight)
   dist, path = calculate_s_path(stars_fil,amount_stars,selected_arcs,tras_index)
   d_list.append(dist)
