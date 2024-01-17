@@ -66,7 +66,7 @@ for amount_stars in range(10,101,10):
   selected_arcs = []
   stars = import_database_ran('./base_final.csv', amount_stars)
   tras_index, stars_fil = add_tras(stars,amount_stars)
-  selected_arcs, elapsed_time, mem = random_gen(stars_fil,12.1,True)
+  selected_arcs, elapsed_time, mem = random_gen(stars_fil,12.1)
   #dist = shortest_distance(G1,0,tras_index,weights=edge_weight)
   dist, path = calculate_s_path(stars_fil,amount_stars,selected_arcs,tras_index)
   d_list.append(dist)
