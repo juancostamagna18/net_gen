@@ -45,6 +45,7 @@ p = 0.8
 
 for amount_stars in range(10,101,10):
   stars = import_database_ran('./base_final.csv',100)
+  tras_index, stars = add_tras(stars,amount_stars)
   am_nodes.append(amount_stars)
   solution_net, elapsed_time, mem = erdos_gen(stars,p,amount_stars,12.1)
   time_list.append(elapsed_time)
