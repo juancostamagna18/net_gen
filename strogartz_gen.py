@@ -11,13 +11,13 @@ def stro_gen(stars, pw, amount_stars,kl,edge_lenght, max_lenght=False):
     creates a net with the Watts-Strogatz model.
     Arguments:
         stars: a list of dictionaries with the stars data
-        #pw: the probability of disconect an edge(optional float in case have max_lenght = true)
+        pw: the probability of disconect an edge(optional float in case have max_lenght = true)
         amount_stars: number of stars for the net (integer)
         kl: maximum node degree in the net
         edge_lenght: maximum allowable lenght for every edge in the net
         max_lenght: tell us if are usign maximum allowable lenght in the algorithm
     Returns:
-        The net in a list of edges.
+        The net in a list of edges, the elapsed time, the memory used by the algorithm.
     '''
 
     edges_act = []
