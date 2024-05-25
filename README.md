@@ -1,4 +1,4 @@
-[#Network Generation Problem]
+[![Network Generation Problem]]
 [Mixed Integer Linear Progromming (MILP)]
 # Interstellar Network Topology Design and Protocol Evaluation
 
