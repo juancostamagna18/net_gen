@@ -58,7 +58,7 @@ def model_SPDOM(stars,amount_stars,min_d,max_d,min_diam,max_diam,
     f = model.addVars(nodes,nodes,edges,vtype=GRB.CONTINUOUS, name='f')
     # shortest path variable
     w = model.addVars(edges,vtype=GRB.CONTINUOUS, name='w')
-
+    # binary vars that allows that the characteristic path lenght be calculated in a range
     rcplm = model.addVars(edges, vtype=GRB.BINARY, name = 'rcplm')
     rcplp = model.addVars(edges, vtype=GRB.BINARY, name = 'rcplp')
     #charecteristic path lenght variable
