@@ -1,5 +1,3 @@
-[![Network Generation Problem]]
-[Mixed Integer Linear Progromming (MILP)]
 # Interstellar Network Topology Design and Protocol Evaluation
 
 The recent discovery of potentially habitable planets orbiting the TRAPPIST-1 system intensified interest in interstellar exploration. Although the most distant human-made object (Voyager 1) could take thousands of years to reach the nearest star (Proxima Centauri), numerous projects have proposed propulsion ideas (and energy systems) to reduce this duration. in orders of magnitude. Although the event renewed public interest in interstellar exploration, the fundamental problem behind interstellar missions remains, of course, distance, which imposes significant challenges. In particular, communication protocols must deal with unprecedented delays in signal propagation.
