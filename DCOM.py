@@ -6,13 +6,14 @@ from time import *
 import os, psutil
 from utilities import *
 
-def model_DCOM(stars,amount_stars,d):
+def model_DCOM(stars,amount_stars,degrees,edge_lenght,max_lenght=True):
     '''
     creates a net with the DCOM model.
     Arguments:
         stars: a list of dictionaries with the stars data
         amount_stars: number of stars for the net (integer)
         d: degree for every node member of the net
+        edge_lenght: the max edge distance allowable in our net if max_lenght
         max_lenght: tell us if are usign maximum allowable lenght in the algorithm
     Returns:
         The net in a list of edges, the elapsed time, the memory used by the algorithm.
@@ -24,14 +25,16 @@ def model_DCOM(stars,amount_stars,d):
     # Create the graph edges. Don't allow loops in the net 
     edges = tuplelist([(i,j) for i in nodes for j in nodes if i < j])
     triangles = tuplelist([(i,j,k) for i in nodes for j in nodes for k in nodes if i<j and j<k])
-    degrees = {}
-    for i in range(amount_stars):
-        degrees[i] = d
-
+    
+    
+    #distances
+    distances = {}
+    for k,l in edges:
+        distances[k,l] =  dist1(k,l,stars)
+  
     # Model
     model = Model("DCOM")
 
-    # variables de decision
     # decision variables
     x = model.addVars(edges, vtype=GRB.BINARY, name='x')
     # 3-cycle variable
@@ -87,7 +90,11 @@ def model_DCOM(stars,amount_stars,d):
    # (exactly the same networks but with permuted nodes)
     model.addConstrs(pd[i] - pd[i+1] >= 0 for i in nodes if i <= 8)
     model.addConstrs(pd[i] - pd[i+1] + pcc[i] - pcc[i+1] >= 0 for i in nodes if i <= 8)
-
+    # max lenght edges constraint
+    if max_lenght:
+        model.addConstrs(distances[k,l]*x[k,l] <= edge_lenght
+                        for k,l in edges)
+   
 
     model.addConstrs(sdm[i] >= 0 for i in nodes)
     model.addConstrs(sdp[i] >= 0 for i in nodes)
@@ -118,9 +125,14 @@ time_list = []
 dist_list = []
 
 for amount_stars in range(10,20):
+    # a dictionary with the node sequence for the net
+    degrees = {}
+    for i in range(amount_stars):
+      degrees[i] = 3
+
     stars = import_database('./base_final.csv',amount_stars)
     tras_index, stars_fil = add_tras(stars,amount_stars)
-    solution_net,elapsed_time, mem_usage = model_DCOM(stars_fil,amount_stars,8)
+    solution_net,elapsed_time, mem_usage = model_DCOM(stars_fil,amount_stars,degrees,20)
    #create the nodes of the network with the stars and add traspist at the end
     time_list.append(elapsed_time)
     mem_us.append(mem_usage)
