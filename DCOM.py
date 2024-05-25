@@ -29,7 +29,7 @@ def model_DCOM(stars,amount_stars,d):
         degrees[i] = d
 
     # Model
-    model = Model("NetGen")
+    model = Model("DCOM")
 
     # variables de decision
     # decision variables
@@ -121,13 +121,13 @@ for amount_stars in range(10,20):
     stars = import_database('./base_final.csv',amount_stars)
     tras_index, stars_fil = add_tras(stars,amount_stars)
     solution_net,elapsed_time, mem_usage = model_DCOM(stars_fil,amount_stars,8)
-   #we create the nodes of the network with the stars and add traspist at the end
+   #create the nodes of the network with the stars and add traspist at the end
     time_list.append(elapsed_time)
     mem_us.append(mem_usage)
     if (0,tras_index) in solution_net:
       solution_net.remove((0,tras_index))
-    if not (0,tras_index) in solution_net:
-      print("no esta")
+    #if not (0,tras_index) in solution_net:
+    #  print("no esta")
 
     net_plot(stars_fil,amount_stars,solution_net)
     d, s_path = calculate_s_path(stars_fil,amount_stars,solution_net, tras_index)
