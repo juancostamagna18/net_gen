@@ -8,6 +8,15 @@ from time import *
 import os, psutil
 
 def dist1(p1,p2,stars_fil):
+    '''
+    Ecludian distance between two stars.
+    Arguments:
+        p1: a position in the node list (integer)
+        p2: a position in the node list (integer)
+        stars_fil: a dictionaries list that contains all the stars data
+    Returns:
+        The distance between the two stars in pc(float)
+    '''
     result = 0
     result += m.pow(stars_fil[p1]['x']-stars_fil[p2]['x'],2)
     result += m.pow(stars_fil[p1]['y']-stars_fil[p2]['y'],2)
@@ -195,7 +204,14 @@ def take_coordinates(stars, amount_stars):
     return coordx,coordy,coordz
 
 def plot_stat(am_nodes, mem_us, time_list,shortest_path):
-
+    '''
+    plots all the time, memory and shortest path data relate to the run of the algorithms
+    Arguments:
+        am_nodes: amount nodes list used in all executions 
+        mem_us: memory usage list used in all executions
+        time_list: the time elapsed list between the begining and the end in all executions
+        shortest_path: the shortest path listin all executions
+    '''
     plt.plot(am_nodes,mem_us)
     plt.xlabel("Cantidad de estrellas")
     plt.ylabel("Uso de Memoria (MB)")
@@ -214,9 +230,11 @@ def plot_stat(am_nodes, mem_us, time_list,shortest_path):
 
 def plot_histograms(stars,amount_stars,solution_net):
     '''
-    plots the histograms the several net properties: edge distance, distance to the sun,
+    plots the histograms of several net properties: edge distance, distance to the sun,
     all to all stars distance, node degree, global clustering, local clustering.
     Arguments:
+        stars: dictionaries list with the stars data
+        amount_stars: number of the total stars using in our model
         solution_net: edges list taking from the model solution
     '''
     # create a undirected graph
@@ -287,7 +305,16 @@ def plot_histograms(stars,amount_stars,solution_net):
     plt.show()
 
 def calculate_s_path(stars, amount_stars, solution_net, tras_index):
-
+    '''
+    calcualtes the shortest path between the sun and trasppist-1
+    Arguments:
+        stars: dictionaries list with the stars data
+        amount_stars: number of the total stars using in our model
+        solution_net: edges list taking from the model solution
+        tras_index: the trasppist-1 position in stars
+    Returns: 
+        the shortest path value and the edges in this path
+    '''
     G1 = Graph(directed=False)
     G1.add_vertex(amount_stars)
     edge_weight = G1.new_edge_property("double")
@@ -304,6 +331,14 @@ def calculate_s_path(stars, amount_stars, solution_net, tras_index):
     return dist, s_path
 
 def add_tras(stars,amount_stars):
+    '''
+    adds trasppist-1 data to the stars list
+    Arguments:
+        stars: dictionaries list with the stars data
+        amount_stars: number of the total stars using in our model
+    Returns:
+        the trasppist-1 position in the list and the list with the new data added
+    '''
     #trasppist data
     tras = {'x': 11.7265, 'y': -2.8239, 'z': 1.0623, 'prop': 'Trappist-1'}
     stars_fil = stars[0:amount_stars-1]
