@@ -14,6 +14,7 @@ def erdos_gen(stars,p, amount_stars,edge_lenght, max_lenght=False):
         p: the probability of disconect an edge(optional float in case have max_lenght = true)
         amount_stars: number of stars for the net (integer)
         edge_lenght: maximum allowable lenght for every edge in the net
+        edge_lenght: the max edge distance allowable in our net if max_lenght
         max_lenght: tell us if are usign maximum allowable lenght in the algorithm
     Returns:
         The net in a list of edges, the elapsed time, the memory used by the algorithm.
@@ -36,6 +37,8 @@ def erdos_gen(stars,p, amount_stars,edge_lenght, max_lenght=False):
 
     return edges_act, elapsed_time, mem_us
 
+# -----------------------------------------------------------------------------
+# Example function usage
 am_nodes = []
 time_list = []
 mem_us = []
