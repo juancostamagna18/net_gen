@@ -8,19 +8,35 @@ import matplotlib.pyplot as plt
 from utilities import *
 
 
-def model_short_dis(stars,amount_stars,max_d,edge_lenght,max_lenght=True):
+def model_SPDOM(stars,amount_stars,min_d,max_d,min_diam,max_diam,
+                min_cpl,max_cpl,edge_lenght,max_lenght=True):
+    '''
+    creates a net with the SPDOM model.
+    Arguments:
+        stars: a list of dictionaries with the stars data
+        amount_stars: number of stars for the net (integer)
+        min_d: lower bound degree for every node member of the net
+        max_d: upper bound degree for every node member of the net
+        min_diam: lower bound of the net diameter
+        max_diam: upper bound of the net diameter
+        min_cpl: upper bound of the net characteristic path length
+        max_cpl: upper bound of the net characteristic path length
+        max_lenght: tell us if are usign maximum allowable lenght in the algorithm
+    Returns:
+        The net in a list of edges, the elapsed time, the memory used by the algorithm.
+    '''
     st = time()
     edges_ac = []
     nodes = [i for i in range(amount_stars)]
     edges = [(i,j) for i in nodes for j in nodes if i < j]
-    DL = 0
-    DU = 12.7
-    dL = 0
+    DL = min_diam
+    DU = max_diam
+    dL = min_d
     dU  = max_d
     E = amount_stars*(amount_stars -1)/2
 
-    cplL = 2
-    cplU = 2
+    cplL = min_cpl
+    cplU = max_cpl
 
     #distances
     distances = {}
@@ -28,35 +44,39 @@ def model_short_dis(stars,amount_stars,max_d,edge_lenght,max_lenght=True):
         distances[k,l] =  dist1(k,l,stars)
     
     # Model
-    model = Model("NetGen2")
+    model = Model("SPDOM")
 
 
-    # variables de decision
+    # decision variables
     x = model.addVars(edges, vtype=GRB.BINARY, name='x')
+    #degree
     pd = model.addVars(nodes, vtype=GRB.INTEGER, name='pd')
+    # degree slack variavbles
     sdm = model.addVars(nodes, vtype=GRB.CONTINUOUS, name = 'sdm')
     sdp = model.addVars(nodes, vtype=GRB.CONTINUOUS, name = 'sdp')
+    #shortest path varibles that represents the edges in the path
     f = model.addVars(nodes,nodes,edges,vtype=GRB.CONTINUOUS, name='f')
-
+    # shortest path variable
     w = model.addVars(edges,vtype=GRB.CONTINUOUS, name='w')
 
     rcplm = model.addVars(edges, vtype=GRB.BINARY, name = 'rcplm')
     rcplp = model.addVars(edges, vtype=GRB.BINARY, name = 'rcplp')
-
+    #charecteristic path lenght variable
     pcpl = model.addVar(vtype=GRB.CONTINUOUS, name = 'pcpl')
-
+    # diameter slack variables
     sDm = model.addVar(vtype=GRB.CONTINUOUS, name = 'sDm')
     sDp = model.addVar(vtype=GRB.CONTINUOUS, name = 'sDp')
-
+    # characteristic path lenght variables
     scplm = model.addVar(vtype=GRB.CONTINUOUS, name = 'scplm')
     scplp = model.addVar(vtype=GRB.CONTINUOUS, name = 'scplp')
+    # binary variable that allows to include the lenght path equal 1
     phi = model.addVars(edges, vtype=GRB.BINARY, name = 'phi')
 
-    # funcion objetivo
+    # objetive function
     model.setObjective(quicksum(sdm[i] + sdp[i] for i in nodes) +
                     scplm + scplp + sDm + sDp , GRB.MINIMIZE)
 
-    # restricciones
+    # constraints
     model.addConstrs(pd[i] == quicksum(x[j,k] for j,k in edges
                   if j==i or k==i) for i in nodes)
 
@@ -70,7 +90,7 @@ def model_short_dis(stars,amount_stars,max_d,edge_lenght,max_lenght=True):
                           sum(f[l,k,i,j] for l in nodes) ==
                           (1 if k==i else -1 if k==j else 0)
                           for k in nodes)
-    #restriccion para el maximo largo de aristas
+    # max lenght edges constraint
     if max_lenght:
         model.addConstrs(distances[k,l]*f[k,l,i,j] <= edge_lenght
                         for k,l in edges for i,j in edges)
@@ -127,6 +147,8 @@ def model_short_dis(stars,amount_stars,max_d,edge_lenght,max_lenght=True):
             edges_ac.append((i,j))
     return edges_ac,elapsed_time,mem_us
 
+# -----------------------------------------------------------------------------
+# Example function usage
 am_nodes = []
 short_path = []
 mem_us = []
@@ -134,15 +156,22 @@ time_list = []
 is_random = False
 
 quan = 6
-degree = 10
+min_degree = 0
+max_degree = 10
+min_diam = 0
+max_diam = 12.1
+min_cpl = 1
+max_cpl = 12
+
 stars = import_database('./base_final.csv',quan)
 for amount_stars in range(5,quan,5):
   am_nodes.append(amount_stars)
   if is_random:
     stars = import_database_ran('./base_final.csv',quan)
-    #creamos los nodes de la red con las estrellas y agregamos traspist al final
+  # create the nodes of the network with the stars and add traspist at the end
   tras_index, stars_fil = add_tras(stars,amount_stars)
-  solution_net,elapsed_time,mem_usage = model_short_dis(stars_fil,amount_stars,degree,12)
+  solution_net,elapsed_time,mem_usage = model_SPDOM(stars_fil,amount_stars,min_degree,
+                                                    max_degree,min_diam,max_diam,min_cpl,max_cpl,12)
   if (0,tras_index) in solution_net:
     solution_net.remove((0,tras_index))
   # if not (0,tras_index) in solution_net:
@@ -154,7 +183,7 @@ for amount_stars in range(5,quan,5):
   short_path.append(d)
   net_plot(stars_fil,amount_stars,s_path)
   plot_histograms(stars_fil, amount_stars,solution_net)
-  #longitud de camino media usando graph tools
+  #average path lenght using graph tools
   '''G = Graph(directed=False)
   G.add_vertex(amount_stars)
   edge_weight = G.new_edge_property("double")
@@ -165,7 +194,6 @@ for amount_stars in range(5,quan,5):
     dist = shortest_distance(G,weights=edge_weight)
     apl = sum([sum(i) for i in dist])/(G.num_vertices()**2-G.num_vertices())
     print(amount_stars, apl)'''
-#option = int(input("Enter an option: "))
 
 print(mem_us,time_list)
 plot_stat(am_nodes,mem_us,time_list,short_path)
