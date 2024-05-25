@@ -36,5 +36,5 @@ You can use the function to makes loop over the `amount_stars` var and plot the 
                                                     max_degree,min_diam,max_diam,min_cpl,max_cpl,
                                                     edge_lenght,max_lenght)
 
-The `min_degree` `max_degree` `min_diam``max_diam` `min_cpl` `max_cpl` are the vars uses to test the behavoir of the model (in these example SPDOM) when the boolean var `max_lenght` is **False**. you can loop over `amount_stars` var and save the data in several list and then plot the information.
+The `min_degree` `max_degree` `min_diam` `max_diam` `min_cpl` `max_cpl` are the vars uses to test the behavoir of the model (in these example SPDOM) when the boolean var `max_lenght` is **False**. you can loop over `amount_stars` var and save the data in several list and then plot the information.
 When the `max_lenght` is **True** you also can test how `edge_lenght` affect the net.
