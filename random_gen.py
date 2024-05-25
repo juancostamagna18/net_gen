@@ -56,6 +56,8 @@ def random_gen(stars,edge_lenght, max_lenght=False):
   mem = process.memory_info().rss/1024**2
   return selected_arcs, elapsed_time, mem
 
+# -----------------------------------------------------------------------------
+# Example function usage
 d_list = []
 mem_us = []
 time_list = []
