@@ -21,6 +21,7 @@ def model_SPDOM(stars,amount_stars,min_d,max_d,min_diam,max_diam,
         max_diam: upper bound of the net diameter
         min_cpl: upper bound of the net characteristic path length
         max_cpl: upper bound of the net characteristic path length
+        edge_lenght: the max edge distance allowable in our net if max_lenght
         max_lenght: tell us if are usign maximum allowable lenght in the algorithm
     Returns:
         The net in a list of edges, the elapsed time, the memory used by the algorithm.
