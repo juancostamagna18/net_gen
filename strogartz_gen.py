@@ -37,7 +37,6 @@ def stro_gen(stars, pw, amount_stars,kl,edge_lenght, max_lenght=False):
             pw = 1 - dist1(i,l,stars)/edge_lenght
             if abs(pw) > 1:
               pw = 0
-        #print(pw)
         if pw > chance:
           j = np.random.randint(0,amount_stars-1)
           while j == i or (i,j) in edges_act or (j,i) in edges_act:
@@ -53,9 +52,8 @@ def stro_gen(stars, pw, amount_stars,kl,edge_lenght, max_lenght=False):
 
     return edges_act, elapsed_time, mem_us
 
-
-
-
+# -----------------------------------------------------------------------------
+# Example function usage
 am_nodes = []
 mem_us = []
 time_list = []
@@ -65,6 +63,7 @@ short_path = []
 for amount_stars in range(10,101,10):
     stars = import_database_ran('./base_final.csv', amount_stars)
     tras_index, stars = add_tras(stars,amount_stars)
+    # if the amount of stars are close to kl the algorithm may not end
     if amount_stars > 20:
       solution_net,memo_us, elapsed_time = stro_gen(stars,0.2,amount_stars,15,12.1)
     else:
