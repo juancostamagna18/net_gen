@@ -6,44 +6,65 @@ from time import *
 import os, psutil
 from utilities import *
 
-def model_triangles(stars,amount_stars,d):
+def model_DCOM(stars,amount_stars,d):
+    '''
+    creates a net with the DCOM model.
+    Arguments:
+        stars: a list of dictionaries with the stars data
+        amount_stars: number of stars for the net (integer)
+        d: degree for every node member of the net
+        max_lenght: tell us if are usign maximum allowable lenght in the algorithm
+    Returns:
+        The net in a list of edges, the elapsed time, the memory used by the algorithm.
+    '''
     st = time()
     solution_net = []
     nodes = [i for i in range(amount_stars)]
 
-    # creamos las aristas o edges del grafo. No permitimos que existan bucles en el grafo
+    # Create the graph edges. Don't allow loops in the net 
     edges = tuplelist([(i,j) for i in nodes for j in nodes if i < j])
     triangles = tuplelist([(i,j,k) for i in nodes for j in nodes for k in nodes if i<j and j<k])
     degrees = {}
     for i in range(amount_stars):
-        degrees[i] = 3
+        degrees[i] = d
 
     # Model
     model = Model("NetGen")
 
     # variables de decision
+    # decision variables
     x = model.addVars(edges, vtype=GRB.BINARY, name='x')
+    # 3-cycle variable
     ytr = model.addVars(triangles, vtype=GRB.CONTINUOUS, name='ytr')
-
+    #degree
     pd = model.addVars(degrees, vtype=GRB.INTEGER, name='pd')
+    
+    # amount of triangles in our net
     pntr = model.addVars(degrees, vtype=GRB.CONTINUOUS, name = 'pntr')
+    
+    #cluster coeficient
     pcc = model.addVars(degrees, vtype=GRB.CONTINUOUS, name = 'pcc')
+
+    # slack variables for degree
     sdm = model.addVars(degrees, vtype=GRB.CONTINUOUS, name = 'sdm')
     sdp = model.addVars(degrees, vtype=GRB.CONTINUOUS, name = 'sdp')
-
+    # average path lenght
     pacc = model.addVar(vtype=GRB.CONTINUOUS, name = 'pacc')
+    #Global cluster coefficient
     pgcc = model.addVar(vtype=GRB.CONTINUOUS, name = 'pgcc')
+    #slack variables for the average cluster coefficient
     saccm = model.addVar(vtype=GRB.CONTINUOUS, name = 'saccm')
     saccp = model.addVar(vtype=GRB.CONTINUOUS, name = 'saccp')
+    #slack varibles for the global cluster coefficient
     sgccm = model.addVar(vtype=GRB.CONTINUOUS, name = 'sgccm')
     sgccp = model.addVar(vtype=GRB.CONTINUOUS, name = 'sgccp')
 
 
 
-    # funcion objetivo
+    # Objetive function
     model.setObjective(quicksum(sdm[i] + sdp[i] for i in nodes) + saccm + saccp + sgccm + sgccp, GRB.MINIMIZE)
 
-    # restricciones
+    # Constraints
     model.addConstrs(ytr[i,j,k] <= x[i,j] for i,j,k in triangles)
     model.addConstrs(ytr[i,j,k] <= x[i,k] for i,j,k in triangles)
     model.addConstrs(ytr[i,j,k] <= x[j,k] for i,j,k in triangles)
@@ -62,8 +83,8 @@ def model_triangles(stars,amount_stars,d):
     model.addConstr(pgcc + sgccm - sgccp >= 0)
     model.addConstr(pacc + saccm - saccp <= 0.25 )
 
-    # romper simetria para evitar perder performance con los posibles isomorfismos de redes
-    #(redes exactamente iguales pero con los nodes permutados)
+   # break symmetry to avoid losing performance with possible network isomorphisms
+   # (exactly the same networks but with permuted nodes)
     model.addConstrs(pd[i] - pd[i+1] >= 0 for i in nodes if i <= 8)
     model.addConstrs(pd[i] - pd[i+1] + pcc[i] - pcc[i+1] >= 0 for i in nodes if i <= 8)
 
@@ -77,7 +98,6 @@ def model_triangles(stars,amount_stars,d):
 
     model.optimize()
 
-    
     end_t = time()
     elapsed_time = end_t - st
     for i,j in edges:
@@ -89,6 +109,8 @@ def model_triangles(stars,amount_stars,d):
 
     return solution_net, elapsed_time, mem_us
 
+# -----------------------------------------------------------------------------
+# Example function usage
 am_nodes = []
 short_path = []
 mem_us = []
@@ -98,8 +120,8 @@ dist_list = []
 for amount_stars in range(10,20):
     stars = import_database('./base_final.csv',amount_stars)
     tras_index, stars_fil = add_tras(stars,amount_stars)
-    solution_net,elapsed_time, mem_usage = model_triangles(stars_fil,amount_stars,8)
-    #creamos los nodes de la red con las estrellas y agregamos traspist al final
+    solution_net,elapsed_time, mem_usage = model_DCOM(stars_fil,amount_stars,8)
+   #we create the nodes of the network with the stars and add traspist at the end
     time_list.append(elapsed_time)
     mem_us.append(mem_usage)
     if (0,tras_index) in solution_net:
