@@ -12,8 +12,8 @@ This repository contains the algorithms used in my thesis
 
 ## Structure 
 
-* NetGen1.py : This contains the model DCOM, expressed in gurobi syntax.
-* NetGen2.py : This file contains the model SPDOM, expressed in gurobi syntax.
+* DCOM.py : This contains the model DCOM, expressed in gurobi syntax.
+* SPDOM.py : This file contains the model SPDOM, expressed in gurobi syntax.
 * random_gen.py: This file contains a random algorithm to make an intelestellar net.
 * erdos_gen.py: This file contains the algorithm based in the Erdös model to generate a net.
 * strogatz_gen.py : This file contains the algorithm based in the Watts-Strogatz model.
