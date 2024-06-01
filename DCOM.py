@@ -124,7 +124,7 @@ mem_us = []
 time_list = []
 dist_list = []
 
-for amount_stars in range(10,20):
+for amount_stars in range(10,101,10):
     # a dictionary with the node sequence for the net
     degrees = {}
     for i in range(amount_stars):
