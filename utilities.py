@@ -72,11 +72,7 @@ def import_database_ran(filename,amount_stars):
 
   # saving the data for the sun
   origen = stars[0:1][0]
-  # sorting the data
-  # sorts only the indexes not equals to the sun index
-  #stars_ran = sorted(stars_ran[0:amount_stars],
-   #   key = lambda d:dist([origen['x'],origen['y'],origen['z']],[d['x'],d['y'],d['z']]))
-
+  
   # insert the sun in the first place
   stars_ran.insert(0,origen)
 
@@ -132,10 +128,10 @@ def net_plot(stars,amount_stars,solution_net):
     axes.set_xlabel('X (pc)')
     axes.set_ylabel('Y (pc)')
     axes.set_zlabel('Z (pc)')
-    # red generada por la solucion optima
+    # ploting the generated net
     for i,j in solution_net:
         plt.plot([stars[i]['x'], stars[j]['x']], [stars[i]['y'],stars[j]['y']],[stars[i]['z'],stars[j]['z']])
-
+    # adding the labels to the sun and Trasppist-1
     for i in range(amount_stars):
         if stars[i]['prop'] == "Sol" or stars[i]['prop'] == "Trappist-1":
             label = stars[i]['prop']
@@ -164,9 +160,10 @@ def plot_scatter(stars,amount_stars):
     coordx,coordy,coordz = take_coordinates(stars,amount_stars)
     fig = plt.figure(figsize=(32,32))
     axes = plt.axes(projection="3d")
+    # plot only the stars without the edges
     axes.scatter3D(coordx,coordy,coordz,color="red")
 
-
+     # adding the labels to the sun and Trasppist-1
     for i in range(amount_stars):
         if stars[i]['prop'] == "Sol" or stars[i]['prop'] == "Trappist-1":
             label = stars[i]['prop']
@@ -174,6 +171,7 @@ def plot_scatter(stars,amount_stars):
             label = ""
         axes.text(stars[i]['x'], stars[i]['y'], stars[i]['z'], label, None, color = 'b')
 
+    #setting the axes labels
     axes.set_xlabel('X')
     axes.set_ylabel('Y')
     axes.set_zlabel('Z')
@@ -195,7 +193,7 @@ def take_coordinates(stars, amount_stars):
     coordx = []
     coordy = []
     coordz = []
-
+    #need to be a list for matplotlib
     for i in range(amount_stars):
         coordx.append(stars[i]['x'])
         coordy.append(stars[i]['y'])
@@ -212,16 +210,19 @@ def plot_stat(am_nodes, mem_us, time_list,shortest_path):
         time_list: the time elapsed list between the begining and the end in all executions
         shortest_path: the shortest path listin all executions
     '''
+    #plot the memory graph
     plt.plot(am_nodes,mem_us)
     plt.xlabel("Cantidad de estrellas")
     plt.ylabel("Uso de Memoria (MB)")
     plt.show()
 
+    # plot the times
     plt.plot(am_nodes,time_list)
     plt.xlabel("Cantidad de estrellas")
     plt.ylabel("Tiempo (s)")
     plt.show()
 
+    #plot the shortest path sun-Trasppist
     plt.plot(am_nodes,shortest_path)
     plt.xlabel("Cantidad de estrellas")
     plt.ylabel("distacia TRAPPIST-Sol (pc)")
@@ -315,14 +316,17 @@ def calculate_s_path(stars, amount_stars, solution_net, tras_index):
     Returns: 
         the shortest path value and the edges in this path
     '''
+    #creates the graph
     G1 = Graph(directed=False)
     G1.add_vertex(amount_stars)
     edge_weight = G1.new_edge_property("double")
 
+    # addding the edges
     for (i,j) in solution_net:
         e = G1.add_edge(i,j)
         d = dist1(i,j,stars)
         edge_weight[e] = d
+    #calculates the shortest path
     v_list, e_list = shortest_path(G1,0,tras_index,weights=edge_weight)
     dist = shortest_distance(G1,0,tras_index,weights=edge_weight)
     s_path = [str(e).replace('(', '').replace(')', '').split(',') for e in e_list]
