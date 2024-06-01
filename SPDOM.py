@@ -156,7 +156,7 @@ mem_us = []
 time_list = []
 is_random = False
 
-quan = 6
+quan = 25
 min_degree = 0
 max_degree = 10
 min_diam = 0
