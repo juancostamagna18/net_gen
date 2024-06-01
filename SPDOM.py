@@ -156,6 +156,8 @@ mem_us = []
 time_list = []
 is_random = False
 
+#this the maximun value for amount stars, i. e. the limit for the range function in the for
+# change this value to set the loop lenght, morte htan 25 stars may not arrive to a solution
 quan = 25
 min_degree = 0
 max_degree = 10
